@@ -7787,33 +7787,6 @@ the tools provided from class. However, you must clearly explain and justify wha
     <span class="n">min_error_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">alphas</span><span class="p">[</span><span class="n">min_error_index</span><span class="p">],</span> <span class="n">errors</span><span class="p">[</span><span class="n">min_error_index</span><span class="p">]</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">LOOCV_lambda2</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alphas</span><span class="p">):</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">errors_for_alphas</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alphas</span><span class="p">:</span>
-        <span class="n">errors_squared</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-            <span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-            <span class="n">X_delete</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">y_delete</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            
-            <span class="n">lasso</span> <span class="o">=</span> <span class="n">Lasso</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
-            <span class="n">lasso</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-            
-            <span class="n">selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lasso</span><span class="o">.</span><span class="n">coef_</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            
-            <span class="n">y_pred_delete</span> <span class="o">=</span> <span class="n">lasso</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_delete</span><span class="p">)</span>
-            <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_delete</span> <span class="o">-</span> <span class="n">y_pred_delete</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-            <span class="n">errors_squared</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
-        <span class="n">mean_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">errors_squared</span><span class="p">)</span>
-        <span class="n">errors_for_alphas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean_error</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Alpha: </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">, Selected features: </span><span class="si">{</span><span class="n">selected</span><span class="si">}</span><span class="s2">, LOOCV Error: </span><span class="si">{</span><span class="n">mean_error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-    <span class="n">min_error_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">errors_for_alphas</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">alphas</span><span class="p">[</span><span class="n">min_error_index</span><span class="p">],</span> <span class="n">errors_for_alphas</span><span class="p">[</span><span class="n">min_error_index</span><span class="p">]</span>
-
-
 <span class="n">alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
 <span class="n">best_lambda</span><span class="p">,</span> <span class="n">best_error</span> <span class="o">=</span> <span class="n">LOOCV_lambda</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">alphas</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Best lambda: </span><span class="si">{</span><span class="n">best_lambda</span><span class="si">}</span><span class="s2">, with LOOCV error: </span><span class="si">{</span><span class="n">best_error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
